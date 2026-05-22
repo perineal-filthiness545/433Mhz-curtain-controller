@@ -1,0 +1,21 @@
+# PlatformIO build output
+.pio/
+
+# VS Code / IDE
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch
+.vscode/.browse.c_cpp.db*
+
+# WiFi credentials — copy include/credentials.h.example to include/credentials.h
+include/credentials.h
+
+# Legacy credential files (no longer used)
+include/ssid
+include/password
+
+# Claude Code project files
+.claude/
+
+# Downloaded capture files
+captures_*.json
