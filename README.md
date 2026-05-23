@@ -26,16 +26,22 @@ A web-based 433 MHz OOK signal analyzer, BMC protocol decoder, and controller fo
 
 ### CC1101 wiring
 
-| CC1101 pin | ESP32-C3 GPIO | Note |
-|---|---|---|
-| VCC | 3.3 V | **3.3 V only** — not 5 V tolerant |
-| GND | GND | |
-| CSn | GPIO 4 | SPI chip select |
-| SCK | GPIO 6 | SPI clock |
-| MOSI | GPIO 7 | SPI data in |
-| MISO | GPIO 5 | SPI data out |
-| GDO0 | GPIO 3 | ISR edge capture / async TX data |
-| GDO2 | — | Leave unconnected |
+```
+   ESP32-C3              CC1101
+ ┌──────────────┐    ┌──────────────┐
+ │         3.3V ├────┤ VCC          │
+ │          GND ├────┤ GND          │
+ │       GPIO 4 ├────┤ CSn          │
+ │       GPIO 6 ├────┤ SCK          │
+ │       GPIO 7 ├────┤ MOSI         │
+ │       GPIO 5 ├────┤ MISO         │
+ │       GPIO 3 ├────┤ GDO0         │
+ │              │    │ GDO2 (n/c)   │
+ └──────────────┘    └──────────────┘
+```
+
+> **Note:** CC1101 is 3.3 V only — do not connect VCC to 5 V.  
+> GDO0 serves as ISR edge input during RX and async serial data output during TX.
 
 ---
 
@@ -63,17 +69,6 @@ Because of the rolling code, **each button press can only be replayed once**. Ca
 - [PlatformIO](https://platformio.org/) (CLI or IDE extension)
 - ESP32-C3 DevKitM-1 connected via USB
 
-### Credentials
-
-Copy the example credentials file and fill in your WiFi details:
-
-```bash
-cp include/credentials.h.example include/credentials.h
-# then edit include/credentials.h
-```
-
-`include/credentials.h` is excluded from git by `.gitignore`.
-
 ### Build and upload
 
 ```bash
@@ -86,7 +81,16 @@ Monitor serial output (115200 baud):
 pio device monitor
 ```
 
-The device prints its IP address on boot. Open it in a browser.
+### First-boot WiFi setup
+
+On first boot (or after a WiFi reset) the device starts in access point mode:
+
+1. Connect your phone or laptop to the **`433MHz-Setup`** WiFi network
+2. Browse to **`http://192.168.4.1`** (most devices open a captive portal automatically)
+3. Click **Scan Networks**, select your SSID, enter the password, and click **Save & Connect**
+4. The device reboots and connects to your network; its IP address is printed on the serial monitor
+
+To reset WiFi credentials later, open the web UI → **Home Assistant / MQTT** → **Reset WiFi**.
 
 ---
 
