@@ -1,5 +1,7 @@
 # Abalon Curtain 433MHz Analyzer and Controller
 
+[![GitHub](https://img.shields.io/badge/GitHub-433Mhz--curtain--controller-blue?logo=github)](https://github.com/HannesHofer/433Mhz-curtain-controller)
+
 A web-based 433 MHz OOK signal analyzer, BMC protocol decoder, and controller for the **Abalon electric curtain motor** (and similar rolling-code 433 MHz OOK devices). Runs on an ESP32-C3 with a CC1101 RF transceiver. Integrates with Home Assistant via MQTT auto-discovery.
 
 ---
