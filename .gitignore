@@ -7,12 +7,6 @@
 .vscode/ipch
 .vscode/.browse.c_cpp.db*
 
-# Legacy credential files (no longer used — WiFi now configured via captive portal)
-include/credentials.h
-include/credentials.h.example
-include/ssid
-include/password
-
 # Claude Code project files
 .claude/
 
