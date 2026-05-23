@@ -7,10 +7,9 @@
 .vscode/ipch
 .vscode/.browse.c_cpp.db*
 
-# WiFi credentials — copy include/credentials.h.example to include/credentials.h
+# Legacy credential files (no longer used — WiFi now configured via captive portal)
 include/credentials.h
-
-# Legacy credential files (no longer used)
+include/credentials.h.example
 include/ssid
 include/password
 
